@@ -1,0 +1,7 @@
+claude-agent-sdk
+anyio
+librosa
+matplotlib
+numpy
+scipy
+opencv-python
