@@ -48,19 +48,43 @@ async def main():
     print("Type your request to the agent. Type 'exit' or 'quit' to end the session.")
     print("-" * 40)
 
-    # Define the agent's options - no custom tools needed!
+    # Define the agent's options with full toolset
     system_prompt = (
         "You are a creative assistant specializing in programmatic video and audio editing. "
-        "You have access to a file system (Read, Write) and a Bash terminal for running commands like ffmpeg. "
+        "You have access to a file system (Read, Write, Edit, MultiEdit), pattern matching (Glob, Grep), "
+        "a Bash terminal for running commands like ffmpeg and yt-dlp, web access (WebFetch, WebSearch), "
+        "and task management (Task, TodoWrite, SlashCommand). "
         "Your working directory is `/workspace`. Think step-by-step and use your tools to accomplish the user's goal. "
-        "\n\nIMPORTANT: The Read tool can view images directly - just use it on any image file path to see the contents."
+        "\n\nIMPORTANT: "
+        "\n- The Read tool can view images directly - just use it on any image file path to see the contents."
+        "\n- You can use yt-dlp in Bash to download videos from YouTube and other platforms."
+        "\n- Use ffmpeg for video/audio processing and editing tasks."
+        "\n- Use whisper for transcription: `whisper audio.mp3 --model medium --language en` outputs text/SRT/VTT formats."
+        "\n- opencv-python (cv2) is available for video frame extraction and analysis."
+        "\n- scenedetect is available for automatic scene detection: `scenedetect -i video.mp4 detect-adaptive`"
+        "\n- For music identification, use chromaprint (fpcalc) with pyacoustid. Install chromaprint with: `brew install chromaprint` (macOS) or `apt install libchromaprint-tools` (Linux)."
+        "\n- If you need any tool that isn't installed (Python libraries, CLI tools, etc.), feel free to install it using pip, npm, or the appropriate package manager. Be proactive about installing what you need to complete the task."
     )
 
     options = ClaudeAgentOptions(
         allowed_tools=[
+            # File operations
             "Read",
             "Write",
+            "Edit",
+            "MultiEdit",
+            # Search/pattern matching
+            "Glob",
+            "Grep",
+            # Execution
             "Bash",
+            # Web access
+            "WebFetch",
+            "WebSearch",
+            # Task management
+            "Task",
+            "TodoWrite",
+            "SlashCommand",
         ],
         cwd=str(workspace_dir.resolve()),
         system_prompt=system_prompt,

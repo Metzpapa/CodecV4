@@ -5,3 +5,7 @@ matplotlib
 numpy
 scipy
 opencv-python
+yt-dlp
+openai-whisper
+scenedetect
+pyacoustid
