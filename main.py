@@ -6,15 +6,13 @@ from pathlib import Path
 from claude_agent_sdk import (
     ClaudeSDKClient,
     ClaudeAgentOptions,
-    create_sdk_mcp_server,
     AssistantMessage,
     UserMessage,
     TextBlock,
     ToolUseBlock,
 )
 
-# Import our custom tool function
-from custom_tools import view_media
+# No custom tools needed - Claude's native Read tool can view images!
 
 # --- ANSI Color Codes for clearer terminal output ---
 COLOR_RESET = "\033[0m"
@@ -50,29 +48,19 @@ async def main():
     print("Type your request to the agent. Type 'exit' or 'quit' to end the session.")
     print("-" * 40)
 
-    # 1. Create the server for our custom tools
-    media_server = create_sdk_mcp_server(
-        name="media_tools",
-        version="1.0.0",
-        tools=[view_media], # Pass our tool function here
-    )
-
-    # 2. Define the agent's options
+    # Define the agent's options - no custom tools needed!
     system_prompt = (
         "You are a creative assistant specializing in programmatic video and audio editing. "
-        "You have access to a file system (Read, Write), a Bash terminal for running commands like ffmpeg, "
-        "and a special `view_media` tool to see visual representations of files. "
+        "You have access to a file system (Read, Write) and a Bash terminal for running commands like ffmpeg. "
         "Your working directory is `/workspace`. Think step-by-step and use your tools to accomplish the user's goal. "
-        "When you use the `view_media` tool, I will show you the resulting image. Analyze it and continue your plan."
+        "\n\nIMPORTANT: The Read tool can view images directly - just use it on any image file path to see the contents."
     )
 
     options = ClaudeAgentOptions(
-        mcp_servers={"media": media_server},
         allowed_tools=[
             "Read",
             "Write",
             "Bash",
-            "mcp__media__view_media"  # The unique identifier for our custom tool
         ],
         cwd=str(workspace_dir.resolve()),
         system_prompt=system_prompt,
